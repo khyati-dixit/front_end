@@ -1,0 +1,223 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/datatables/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+    </header>
+
+    <div class="container py-4">
+        <br />
+        <div class="jumbotron">
+            <h2 class="text-left text-uppercase">Users</h2>
+        </div><br />
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addUser">
+            Add User
+        </button>
+        <hr />
+        <div id="dataTable_wrapper"></div>
+        <table id="dataTable1" class="table table-bordered table-striped" style="background-color:darkslategray;">
+            <thead>
+                <tr class="table-primary">
+                    <th>StudentId</th>
+                    <th>StudentName</th>
+                    <th>StudentAge</th>
+                    <th>StudentEmail</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+        </table>
+
+    </div>
+    <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New User Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="form-group">
+
+                                <label>Full Name</label>
+                                <input class="form-control" id="AName" name="AName" type="text" />
+                                <span id="nameval" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>UserEmail</label>
+                                <input class="form-control" id="ALat" name="ALat" type="text" />
+                                <span id="latval" class="field-validation-error"></span>
+                            </div>
+
+
+                            @*<div class="form-group">
+                                    <label>Civil Id Number</label>
+                                    <input class="form-control" id="AID" name="AID" type="text" />
+                                    <span id="IDval" class="field-validation-error"></span>
+                                </div>*@
+                            <input type="hidden" id="action" name="action" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success" id="btnAdd">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+
+                            <div class="form-group">
+                                <label>UserId</label>
+                                <input class="form-control" id="AId0" name="AId0" type="text" disabled />
+                                <span id="idval" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input class="form-control" id="AName0" name="AName0" type="text" />
+                                <span id="nameval" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>E-Mail</label>
+                                <input class="form-control" id="ALat0" name="ALat0" type="text" />
+                                <span id="latval" class="field-validation-error"></span>
+                            </div>
+                            @*<div class="form-group">
+                                    <label>Civil Id Number</label>
+                                    <input class="form-control" id="AID0" name="AID0" type="text" />
+                                    <span id="IDval" class="field-validation-error"></span>
+                                </div>*@
+                            <input type="hidden" id="action" name="action" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning" data-dismiss="modal" onclick="">Close</button>
+                    <button type="submit" class="btn btn-outline-success" id="btnEdit">Submit</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="py-4">
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2020 - IdentityContextDemo - <h5 text-muted>@DateTime.Now</h5>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/js/addUser.js"></script>
+<script src="~/js/delete.js"></script>
+<script src="~/js/EditUser.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        Manager.GetUser();
+    })
+    var Manager = {
+        GetUser: function () {
+            debugger;
+            var obj = "";
+            var serviceUrl = "http://localhost:63313/api/Values/Get";
+            window.Manager.GetAPI(serviceUrl, onSuccess, onFailed);
+            function onSuccess(jsonData) {
+                obj = jsonData;
+                $.each(jsonData, function (i, item) {
+                    var rows = "<tr>" +
+                        "<td id='id'>" + item.id + "</td>" +
+                        "<td id='studentName'>" + item.studentName + "</td>" +
+                        "<td id='studentAge'>" + item.studentAge + "</td>" +
+                        "<td id='studentEmail'>" + item.studentEmail + "</td>" +                       
+                        "</tr>";
+                    $('#dataTable1').append(rows);
+
+                });
+            }
+            function onFailed(error) {
+                window.alert(error.statusText);
+            }
+            return obj;
+        },
+        GetAPI: function (serviceUrl, successCallback, errorCallback) {
+            $.ajax({
+                
+                type: "GET",
+                url: serviceUrl,
+                dataType: "json",
+
+                success: successCallback,
+                error: errorCallback
+
+
+            });
+        },
+    }
+
+
+
+
+
+</script>
+
+
+
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $('#dataTable1').DataTable({
+            "ajax": {
+                "url": 'http://localhost:63313/api/Values/Get',
+                "type": "GET",
+                "datatype": "json",
+            },
+
+            "columns": [
+                { "data": "StudentId" },
+                { "data": "StudentName" },
+                { "data": "StudentAge" },
+                { "data":"StudentEmail"},
+                { "data": null, title: 'Action', wrap: true, "render": function (data) { return '<div class="btn-group"> <button type="button" onclick="EditUserDetails(' + data.userId + ')" class="btn btn-outline-info" data-toggle="modal" data-target="#editUser">Edit</button></div>' } },
+                { "data": null, title: 'Action', wrap: true, "render": function (data) { return '<div class="btn-group"> <button type="button" onclick="DeleteUser(' + data.userId + ')" class="btn btn-outline-danger">Delete</button></div>' } },
+
+
+            ]
+        });
+    });</script>*@
+
+
+
+
